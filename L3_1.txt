@@ -1,0 +1,35 @@
+
+
+
+1.
+
+----------------------------------copilot--------------------------------------------
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+# Step 1: Load dataset
+data = {
+    'TV': [230.1, 44.5, 17.2, 151.5, 180.8, 8.7, 57.5, 120.2, 144.1, 111.6],
+    'Radio': [37.8, 39.3, 45.9, 41.3, 10.8, 48.9, 32.8, 19.6, 16.0, 12.6],
+    'Newspaper': [69.2, 45.1, 69.3, 58.5, 58.4, 75.0, 23.5, 11.6, 40.3, 37.9],
+    'Sales': [22.1, 10.4, 9.3, 18.5, 12.9, 7.2, 11.8, 13.2, 15.6, 12.2]
+}
+df = pd.DataFrame(data)
+
+# Step 2: Define features and target
+X = df[['TV', 'Radio', 'Newspaper']]
+y = df['Sales']
+
+# Step 3: Train model
+model = LinearRegression()
+model.fit(X, y)
+
+# Step 4: Output coefficients
+print("Intercept:", model.intercept_)
+print("Coefficients:", model.coef_)
+
+# Step 5: Predict sales for a new budget allocation
+new_budget = [[200, 30, 50]]  # Example: TV=200, Radio=30, Newspaper=50
+predicted_sales = model.predict(new_budget)
+print("Predicted Sales:", predicted_sales[0])
+
