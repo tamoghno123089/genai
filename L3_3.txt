@@ -1,0 +1,53 @@
+
+
+3.
+
+---------------------------------copilot------------------------------------------
+
+import matplotlib.pyplot as plt
+import networkx as nx
+
+def draw_neural_network(layer_sizes):
+    G = nx.Graph()
+    pos = {}
+    node_count = 0
+    
+    # Create nodes layer by layer
+    for layer_idx, layer_size in enumerate(layer_sizes):
+        for neuron_idx in range(layer_size):
+            node_id = node_count
+            pos[node_id] = (layer_idx, neuron_idx - layer_size/2)
+            G.add_node(node_id)
+            node_count += 1
+    
+    # Connect nodes between layers
+    prev_layer_end = 0
+    for i in range(len(layer_sizes) - 1):
+        current_layer_start = prev_layer_end
+        current_layer_end = current_layer_start + layer_sizes[i]
+        next_layer_start = current_layer_end
+        next_layer_end = next_layer_start + layer_sizes[i+1]
+        
+        for src in range(current_layer_start, current_layer_end):
+            for dst in range(next_layer_start, next_layer_end):
+                G.add_edge(src, dst)
+        
+        prev_layer_end = current_layer_end
+    
+    # Draw the network
+    plt.figure(figsize=(10, 6))
+    nx.draw(G, pos, with_labels=False, node_size=500, node_color="skyblue", edge_color="gray")
+    
+    # Add layer labels
+    x_labels = {i: f"Layer {i+1}" for i in range(len(layer_sizes))}
+    for i, label in x_labels.items():
+        plt.text(i, max(layer_sizes)/2 + 1, label, fontsize=12, ha="center")
+    
+    plt.title("Neural Network for Pima Indians Diabetes Prediction")
+    plt.show()
+
+# Define network architecture: 8 inputs, 12 hidden, 8 hidden, 1 output
+layer_sizes = [8, 12, 8, 1]
+draw_neural_network(layer_sizes)
+
+

@@ -1,0 +1,50 @@
+
+
+2.
+
+----------------------------------------copilot---------------------------------------
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+
+# Load dataset
+data = pd.DataFrame({
+    'Age': [29,35,40,28,45,25,50,30,37,26],
+    'JobRole': ['Sales Executive','Research Scientist','Laboratory Technician',
+                'Sales Executive','Manager','Research Scientist','Manager',
+                'Sales Executive','Laboratory Technician','Research Scientist'],
+    'MonthlyIncome': [4800,6000,3400,4300,11000,3500,12000,5000,3100,4500],
+    'JobSatisfaction': [3,4,2,3,4,1,4,2,2,3],
+    'YearsAtCompany': [4,8,6,3,15,2,20,5,9,2],
+    'Attrition': [1,0,0,1,0,1,0,0,0,1]
+})
+
+# Encode categorical variable
+le = LabelEncoder()
+data['JobRole'] = le.fit_transform(data['JobRole'])
+
+# Features and target
+X = data.drop('Attrition', axis=1)
+y = data['Attrition']
+
+# Scale features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# KNN model
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train, y_train)
+
+# Predictions
+y_pred = knn.predict(X_test)
+
+# Evaluation
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+

@@ -1,0 +1,67 @@
+
+
+
+4.
+
+------------------------------------------copilot--------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn.linear_model import LinearRegression
+
+# -----------------------------
+# Sample dataset (replace with your own)
+# -----------------------------
+# Features: [Square Footage, Number of Bedrooms]
+X = np.array([
+    [1500, 3],
+    [1800, 4],
+    [2400, 4],
+    [3000, 5],
+    [3500, 5],
+    [4000, 6]
+])
+
+# Target: House Price
+y = np.array([300000, 350000, 420000, 500000, 600000, 650000])
+
+# -----------------------------
+# Train a simple regression model
+# -----------------------------
+model = LinearRegression()
+model.fit(X, y)
+
+# -----------------------------
+# Create a grid for plotting
+# -----------------------------
+x_surf, y_surf = np.meshgrid(
+    np.linspace(X[:,0].min(), X[:,0].max(), 50),
+    np.linspace(X[:,1].min(), X[:,1].max(), 50)
+)
+
+# Flatten the grid and predict
+grid = np.c_[x_surf.ravel(), y_surf.ravel()]
+z_surf = model.predict(grid).reshape(x_surf.shape)
+
+# -----------------------------
+# Plotting in 3D
+# -----------------------------
+fig = plt.figure(figsize=(10,7))
+ax = fig.add_subplot(111, projection='3d')
+
+# Scatter plot of actual data
+ax.scatter(X[:,0], X[:,1], y, color='red', label='Actual Data')
+
+# Surface plot of predictions
+ax.plot_surface(x_surf, y_surf, z_surf, color='blue', alpha=0.5)
+
+# Labels
+ax.set_xlabel('Square Footage')
+ax.set_ylabel('Number of Bedrooms')
+ax.set_zlabel('House Price')
+ax.set_title('3D House Price Prediction Model')
+
+plt.legend()
+plt.show()
+
