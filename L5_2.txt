@@ -1,0 +1,70 @@
+
+
+
+l5-------------
+
+2.
+
+-----------------------------------copilot----------------------------------------------------
+
+#include <iostream>
+#include <cuda_runtime.h>
+
+// CUDA kernel for matrix multiplication
+__global__ void matMulKernel(float* A, float* B, float* C, int N) {
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (row < N && col < N) {
+        float sum = 0.0f;
+        for (int k = 0; k < N; ++k) {
+            sum += A[row * N + k] * B[k * N + col];
+        }
+        C[row * N + col] = sum;
+    }
+}
+
+int main() {
+    int N = 4; // small example size
+    size_t size = N * N * sizeof(float);
+
+    // Host memory
+    float h_A[] = {1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16};
+    float h_B[] = {16,15,14,13, 12,11,10,9, 8,7,6,5, 4,3,2,1};
+    float h_C[N*N];
+
+    // Device memory
+    float *d_A, *d_B, *d_C;
+    cudaMalloc((void**)&d_A, size);
+    cudaMalloc((void**)&d_B, size);
+    cudaMalloc((void**)&d_C, size);
+
+    // Copy data to device
+    cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+
+    // Launch kernel
+    dim3 threadsPerBlock(16, 16);
+    dim3 numBlocks((N+15)/16, (N+15)/16);
+    matMulKernel<<<numBlocks, threadsPerBlock>>>(d_A, d_B, d_C, N);
+
+    // Copy result back
+    cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
+
+    // Print result
+    std::cout << "Result matrix C:" << std::endl;
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            std::cout << h_C[i*N + j] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    // Free device memory
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+
+    return 0;
+}
+
