@@ -1,0 +1,243 @@
+
+
+
+## 🔹 Step 1: Install and Set Up AutoGPT Framework
+AutoGPT is a framework for autonomous AI agents. To install:
+
+1. **Clone the repo**:
+   ```bash
+   git clone https://github.com/Torantulino/Auto-GPT.git
+   cd Auto-GPT
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configure environment**:
+   - Create a `.env` file.
+   - Add your OpenAI API key or other LLM provider keys.
+
+4. **Run AutoGPT**:
+   ```bash
+   python -m autogpt
+   ```
+
+---
+
+## 🔹 Step 2: Telemetry Agent with LlamaIndex
+Since you already did this with LangGraph, now we’ll adapt it to **LlamaIndex**.
+
+### Install LlamaIndex
+```bash
+pip install llama-index
+```
+
+### Example Telemetry Agent (Python)
+```python
+from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index.llms import OpenAI
+
+# Load telemetry data (could be logs, JSON, etc.)
+documents = SimpleDirectoryReader("telemetry_data").load_data()
+
+# Build index
+service_context = ServiceContext.from_defaults(llm=OpenAI(model="gpt-4"))
+index = VectorStoreIndex.from_documents(documents, service_context=service_context)
+
+# Query agent
+query_engine = index.as_query_engine()
+response = query_engine.query("Analyze anomalies in telemetry data")
+print(response)
+```
+
+This agent ingests telemetry logs and answers queries about them.
+
+---
+
+## 🔹 Step 3: Native Language Voice Input → Output in Another Language
+We’ll combine **speech recognition** + **translation** + **speech synthesis**.
+
+### Install dependencies
+```bash
+pip install SpeechRecognition gtts googletrans==4.0.0-rc1 pyaudio
+```
+
+### Example Program
+```python
+import speech_recognition as sr
+from googletrans import Translator
+from gtts import gTTS
+import os
+
+# Step 1: Capture voice input
+recognizer = sr.Recognizer()
+with sr.Microphone() as source:
+    print("Speak now...")
+    audio = recognizer.listen(source)
+
+text = recognizer.recognize_google(audio, language="hi-IN")  # Hindi input
+print("You said:", text)
+
+# Step 2: Translate to another language
+translator = Translator()
+translated = translator.translate(text, src="hi", dest="bn")  # Hindi → Bengali
+print("Translated:", translated.text)
+
+# Step 3: Convert to voice output
+tts = gTTS(translated.text, lang="bn")
+tts.save("output.mp3")
+os.system("start output.mp3")
+```
+
+👉 Example: Speak in **Hindi**, get reply in **Bengali voice**.
+
+---
+
+## ✅ Putting It All Together
+- AutoGPT → Agent orchestration
+- LlamaIndex → Telemetry analysis
+- Speech + Translation → Native language voice interaction
+
+This creates a **multilingual AI agent** that can analyze telemetry data and interact via voice in different native languages.
+
+---
+
+
+--------------------------------------
+
+---
+
+## 📂 Project Structure
+
+```
+TelemetryVoiceAgent/
+│
+├── README.md
+├── requirements.txt
+├── autogpt_agent/
+│   ├── __init__.py
+│   └── agent.py
+├── telemetry_llamaindex/
+│   ├── __init__.py
+│   └── telemetry_agent.py
+└── voice_translate/
+    ├── __init__.py
+    └── voice_agent.py
+```
+
+---
+
+## 📄 requirements.txt
+
+```text
+llama-index
+openai
+SpeechRecognition
+gtts
+googletrans==4.0.0-rc1
+pyaudio
+```
+
+---
+
+## 🔹 1. AutoGPT Agent (`autogpt_agent/agent.py`)
+
+```python
+# Example AutoGPT agent setup
+import autogpt
+
+def run_autogpt():
+    # This assumes AutoGPT is installed and configured
+    autogpt.main()
+```
+
+---
+
+## 🔹 2. Telemetry Agent with LlamaIndex (`telemetry_llamaindex/telemetry_agent.py`)
+
+```python
+from llama_index import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index.llms import OpenAI
+
+def run_telemetry_agent():
+    # Load telemetry data from folder
+    documents = SimpleDirectoryReader("telemetry_data").load_data()
+
+    # Build index
+    service_context = ServiceContext.from_defaults(llm=OpenAI(model="gpt-4"))
+    index = VectorStoreIndex.from_documents(documents, service_context=service_context)
+
+    # Query engine
+    query_engine = index.as_query_engine()
+    response = query_engine.query("Analyze anomalies in telemetry data")
+    print("Telemetry Agent Response:", response)
+```
+
+---
+
+## 🔹 3. Voice Translation Agent (`voice_translate/voice_agent.py`)
+
+```python
+import speech_recognition as sr
+from googletrans import Translator
+from gtts import gTTS
+import os
+
+def run_voice_agent(src_lang="hi-IN", dest_lang="bn"):
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Speak now...")
+        audio = recognizer.listen(source)
+
+    text = recognizer.recognize_google(audio, language=src_lang)
+    print("You said:", text)
+
+    translator = Translator()
+    translated = translator.translate(text, src="hi", dest="bn")
+    print("Translated:", translated.text)
+
+    tts = gTTS(translated.text, lang=dest_lang)
+    tts.save("output.mp3")
+    os.system("start output.mp3")
+```
+
+---
+
+## 🚀 How to Run
+
+1. **Clone repo**:
+   ```bash
+   git clone <your-repo-url>
+   cd TelemetryVoiceAgent
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run AutoGPT Agent**:
+   ```bash
+   python -m autogpt_agent.agent
+   ```
+
+4. **Run Telemetry Agent**:
+   ```bash
+   python -m telemetry_llamaindex.telemetry_agent
+   ```
+
+5. **Run Voice Translation Agent**:
+   ```bash
+   python -m voice_translate.voice_agent
+   ```
+
+---
+
+## ✅ Summary
+- **AutoGPT** → Autonomous agent orchestration  
+- **LlamaIndex Telemetry Agent** → Analyze telemetry logs  
+- **Voice Agent** → Speak in one native language, reply in another  
+
+---
